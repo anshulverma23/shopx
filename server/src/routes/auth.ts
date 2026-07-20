@@ -132,11 +132,11 @@ router.post(
         audience: env.googleClientId,
       });
       payload = ticket.getPayload();
-} catch (err) {
-  console.error("Google verify error:", err);
-  res.status(401).json({ error: "Invalid Google credential" });
-  return;
-}
+    } catch (err) {
+      console.error("Google verify error:", err);
+      res.status(401).json({ error: "Invalid Google credential" });
+      return;
+    }
 
     if (!payload?.email) {
       res.status(401).json({ error: "Google account has no verified email" });

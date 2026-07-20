@@ -25,7 +25,9 @@ export function loadRazorpayScript(): Promise<boolean> {
 
 // ── Create/retry a Razorpay order for an existing pending order ──────────
 export const createRazorpayOrder = (orderId: string) =>
-  apiRequest<RazorpayCheckoutDetails>(`/payments/razorpay/order/${orderId}`, { method: "POST" });
+  apiRequest<RazorpayCheckoutDetails>(`/payments/razorpay/order/${orderId}`, {
+    method: "POST",
+  });
 export const useCreateRazorpayOrder = () =>
   useMutation<RazorpayCheckoutDetails, ApiError, { orderId: string }>({
     mutationFn: (vars) => createRazorpayOrder(vars.orderId),
@@ -46,7 +48,9 @@ export const useVerifyRazorpayPayment = () => {
     mutationFn: (vars) => verifyRazorpayPayment(vars.data),
     onSuccess: (order) => {
       queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
-      queryClient.invalidateQueries({ queryKey: getGetOrderQueryKey(order.id) });
+      queryClient.invalidateQueries({
+        queryKey: getGetOrderQueryKey(order.id),
+      });
       queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
     },
   });
@@ -63,10 +67,14 @@ export interface OpenRazorpayCheckoutParams {
 }
 
 /** Opens the Razorpay checkout modal and resolves the verification payload on success. */
-export async function openRazorpayCheckout(params: OpenRazorpayCheckoutParams): Promise<void> {
+export async function openRazorpayCheckout(
+  params: OpenRazorpayCheckoutParams,
+): Promise<void> {
   const loaded = await loadRazorpayScript();
   if (!loaded || typeof window === "undefined" || !(window as any).Razorpay) {
-    throw new Error("Failed to load Razorpay checkout. Please check your connection and try again.");
+    throw new Error(
+      "Failed to load Razorpay checkout. Please check your connection and try again.",
+    );
   }
 
   const RazorpayCtor = (window as any).Razorpay;

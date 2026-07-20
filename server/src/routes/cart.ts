@@ -7,10 +7,11 @@ import { asyncHandler } from "../utils/asyncHandler";
 const router = Router();
 
 async function getOrCreateCart(userId: string): Promise<ICart> {
-  let cart = await Cart.findOne({ user: userId });
-  if (!cart) {
-    cart = await Cart.create({ user: userId, items: [] });
-  }
+  const cart = await Cart.findOneAndUpdate(
+    { user: userId },
+    { $setOnInsert: { user: userId, items: [] } },
+    { new: true, upsert: true }
+  );
   return cart;
 }
 
@@ -76,6 +77,10 @@ router.post(
     const product = await Product.findById(productId);
     if (!product) {
       res.status(404).json({ error: "Product not found" });
+      return;
+    }
+    if (product.stock < 1) {
+      res.status(400).json({ error: "Product is out of stock" });
       return;
     }
 

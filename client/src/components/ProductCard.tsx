@@ -17,8 +17,13 @@ export function ProductCard({ product }: { product: Product }) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!user) {
       toast.error("Please log in to add items to cart");
+      return;
+    }
+    if (product.stock === 0) {
+      toast.error("Product is out of stock");
       return;
     }
     addToCart.mutate({ data: { productId: product.id, quantity: 1 } }, {
@@ -32,6 +37,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!user) {
       toast.error("Please log in to add items to wishlist");
       return;
@@ -94,8 +100,9 @@ export function ProductCard({ product }: { product: Product }) {
           <Button 
             className="w-full rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
             onClick={handleAddToCart}
+            disabled={product.stock === 0}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+            <ShoppingCart className="mr-2 h-4 w-4" /> {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
           </Button>
         </CardFooter>
       </Card>

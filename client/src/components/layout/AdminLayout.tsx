@@ -77,8 +77,12 @@ function SidebarNav({ isAdmin }: SidebarProps) {
 
       <div className="p-4 mt-auto border-t border-slate-800">
         <div className="flex items-center gap-3 px-3 py-3 mb-4">
-          <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center text-primary font-bold">
-            {user?.name?.charAt(0).toUpperCase()}
+          <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center text-primary font-bold overflow-hidden border border-slate-700">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt={user?.name || "User"} className="h-full w-full object-cover" />
+            ) : (
+              user?.name?.charAt(0).toUpperCase()
+            )}
           </div>
           <div className="overflow-hidden">
             <p className="text-sm font-medium text-white truncate">{user?.name}</p>

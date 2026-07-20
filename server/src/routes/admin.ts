@@ -18,7 +18,8 @@ import { formatOrder } from "./orders";
 
 const router = Router();
 
-router.use(requireAuth, requireRole("admin"));
+// Only apply admin authentication to paths starting with /admin
+router.use("/admin", requireAuth, requireRole("admin"));
 
 function formatUser(u: IUser) {
   return {

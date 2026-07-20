@@ -30,6 +30,10 @@ export const env = {
   razorpayKeyId: process.env.RAZORPAY_KEY_ID || "",
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || "",
   razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || "",
+
+  imagekitPublicKey: process.env.IMAGEKIT_PUBLIC_KEY || "",
+  imagekitPrivateKey: process.env.IMAGEKIT_PRIVATE_KEY || "",
+  imagekitUrlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || "",
 };
 
 export const isRazorpayConfigured = Boolean(
@@ -37,3 +41,7 @@ export const isRazorpayConfigured = Boolean(
 );
 
 export const isGoogleAuthConfigured = Boolean(env.googleClientId);
+
+export const isImageKitConfigured = Boolean(
+  env.imagekitPublicKey && env.imagekitPrivateKey && env.imagekitUrlEndpoint,
+);

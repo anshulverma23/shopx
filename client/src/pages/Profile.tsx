@@ -1,5 +1,6 @@
 import { useGetMe, useUpdateMe, useChangePassword, useGetAddresses, useCreateAddress, useUpdateAddress, useDeleteAddress, getGetMeQueryKey, getGetAddressesQueryKey } from "@/api";
 import { useGetSellerProfile, useRegisterSeller } from "@/api";
+import { uploadToImageKit } from "@/api/imagekit";
 import { RootLayout } from "@/components/layout/RootLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +15,7 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { User, Key, MapPin, Plus, Trash2, Edit, Store } from "lucide-react";
+import { User, Key, MapPin, Plus, Trash2, Edit, Store, Upload, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -61,7 +62,11 @@ export default function Profile() {
   const createAddress = useCreateAddress();
   const deleteAddress = useDeleteAddress();
   const { login, accessToken } = useAuth(); // Need login to update context user
-  
+
+  // Avatar upload state
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: { name: "", phone: "", avatarUrl: "" },
@@ -78,6 +83,22 @@ export default function Profile() {
       initialized.current = true;
     }
   }, [user, profileForm]);
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (avatarInputRef.current) avatarInputRef.current.value = "";
+    setAvatarUploading(true);
+    try {
+      const result = await uploadToImageKit(file, "/avatars");
+      profileForm.setValue("avatarUrl", result.url, { shouldDirty: true });
+      toast.success("Avatar uploaded — click Save Changes to apply");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload avatar");
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
 
   function onProfileSubmit(values: z.infer<typeof profileSchema>) {
     updateMe.mutate({ data: values }, {
@@ -178,7 +199,7 @@ export default function Profile() {
             <TabsTrigger value="addresses" className="px-6 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <MapPin className="mr-2 h-4 w-4" /> Addresses
             </TabsTrigger>
-            {user?.role !== "admin" && (
+            {user?.role === "seller" && (
               <TabsTrigger value="seller" className="px-6 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
                 <Store className="mr-2 h-4 w-4" /> Seller
               </TabsTrigger>
@@ -195,25 +216,43 @@ export default function Profile() {
                 <Form {...profileForm}>
                   <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6 max-w-xl">
                     <div className="flex items-center gap-6 mb-8">
-                      <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border">
-                        {profileForm.watch("avatarUrl") ? (
-                          <img src={profileForm.watch("avatarUrl")} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
-                          <User className="h-10 w-10 text-primary" />
-                        )}
+                      {/* Avatar preview */}
+                      <div className="relative group cursor-pointer" onClick={() => !avatarUploading && avatarInputRef.current?.click()}>
+                        <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border-2 border-border group-hover:border-primary transition-colors">
+                          {profileForm.watch("avatarUrl") ? (
+                            <img src={profileForm.watch("avatarUrl")} alt="Avatar" className={`w-full h-full object-cover ${avatarUploading ? "opacity-50" : ""}`} />
+                          ) : (
+                            <User className="h-10 w-10 text-primary" />
+                          )}
+                        </div>
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all">
+                          {avatarUploading
+                            ? <Loader2 className="h-6 w-6 text-white animate-spin" />
+                            : <Upload className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />}
+                        </div>
+                        <input
+                          ref={avatarInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleAvatarUpload}
+                        />
                       </div>
                       <div className="flex-1">
-                        <FormField
-                          control={profileForm.control}
-                          name="avatarUrl"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Avatar URL</FormLabel>
-                              <FormControl><Input placeholder="https://..." {...field} /></FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        <p className="text-sm font-medium mb-1">Profile Photo</p>
+                        <p className="text-xs text-muted-foreground mb-3">Click the circle to upload a new photo (JPG, PNG, WEBP · max 5 MB)</p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={avatarUploading}
+                          onClick={() => avatarInputRef.current?.click()}
+                        >
+                          {avatarUploading
+                            ? <><Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />Uploading…</>
+                            : <><Upload className="mr-2 h-3.5 w-3.5" />Change Photo</>}
+                        </Button>
                       </div>
                     </div>
 
@@ -382,14 +421,14 @@ export default function Profile() {
             </div>
           </TabsContent>
 
-          {user?.role !== "admin" && (
+          {user?.role === "seller" && (
             <TabsContent value="seller">
               <Card className="glass-card">
-                {isSellerRole && isLoadingSellerProfile ? (
+                {isLoadingSellerProfile ? (
                   <CardContent className="py-12 text-center text-muted-foreground">
                     Loading seller profile...
                   </CardContent>
-                ) : isSellerRole && sellerProfile ? (
+                ) : sellerProfile ? (
                   <>
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -423,60 +462,9 @@ export default function Profile() {
                       </Link>
                     </CardContent>
                   </>
-                ) : needsSellerOnboarding ? (
-                  <>
-                    <CardHeader>
-                      <CardTitle>Become a Seller</CardTitle>
-                      <CardDescription>
-                        Set up your store to start listing products on ShopX. Your store will need admin approval before it goes live.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Form {...sellerForm}>
-                        <form onSubmit={sellerForm.handleSubmit(onSellerSubmit)} className="space-y-6 max-w-xl">
-                          <FormField
-                            control={sellerForm.control}
-                            name="storeName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Store Name</FormLabel>
-                                <FormControl><Input placeholder="My Awesome Store" {...field} /></FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={sellerForm.control}
-                            name="description"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Store Description (Optional)</FormLabel>
-                                <FormControl><Textarea placeholder="Tell buyers what you sell..." {...field} /></FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={sellerForm.control}
-                            name="gstNumber"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>GST Number (Optional)</FormLabel>
-                                <FormControl><Input placeholder="22AAAAA0000A1Z5" {...field} /></FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <Button type="submit" disabled={registerSellerMutation.isPending}>
-                            {registerSellerMutation.isPending ? "Creating..." : "Create Seller Profile"}
-                          </Button>
-                        </form>
-                      </Form>
-                    </CardContent>
-                  </>
                 ) : (
                   <CardContent className="py-12 text-center text-muted-foreground">
-                    Something went wrong loading your seller status. Try refreshing the page.
+                    Seller profile not found. Please contact an administrator to set up your store.
                   </CardContent>
                 )}
               </Card>

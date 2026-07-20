@@ -16,6 +16,7 @@ import SellerDashboard from '@/pages/seller/Dashboard';
 import SellerProducts from '@/pages/seller/Products';
 import SellerOrders from '@/pages/seller/Orders';
 import ProductForm from '@/pages/seller/ProductForm';
+import SellerSettings from '@/pages/seller/Settings';
 
 import AdminDashboard from '@/pages/admin/Dashboard';
 import AdminUsers from '@/pages/admin/Users';
@@ -85,6 +86,7 @@ function Router() {
       <Route path="/seller/products/new" component={() => <ProtectedRoute component={ProductForm} roles={["seller", "admin"]} />} />
       <Route path="/seller/products/:id/edit" component={() => <ProtectedRoute component={ProductForm} roles={["seller", "admin"]} />} />
       <Route path="/seller/orders" component={() => <ProtectedRoute component={SellerOrders} roles={["seller", "admin"]} />} />
+      <Route path="/seller/settings" component={() => <ProtectedRoute component={SellerSettings} roles={["seller", "admin"]} />} />
       
       <Route path="/admin/dashboard" component={() => <ProtectedRoute component={AdminDashboard} roles={["admin"]} />} />
       <Route path="/admin/users" component={() => <ProtectedRoute component={AdminUsers} roles={["admin"]} />} />

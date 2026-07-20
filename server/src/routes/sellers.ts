@@ -234,6 +234,7 @@ router.get(
       Product.find(where)
         .populate("category", "name")
         .populate("brand", "name")
+        .populate("seller", "storeName")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit),

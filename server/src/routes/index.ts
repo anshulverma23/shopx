@@ -12,6 +12,7 @@ import wishlistRouter from "./wishlist";
 import sellersRouter from "./sellers";
 import adminRouter from "./admin";
 import paymentsRouter from "./payments";
+import imagekitRouter from "./imagekit";
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use(wishlistRouter);
 router.use(sellersRouter);
 router.use(adminRouter);
 router.use(paymentsRouter);
+router.use(imagekitRouter);
 
 export default router;

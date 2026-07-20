@@ -17,9 +17,13 @@ import type {
   UserStatus,
 } from "./types";
 
-export const getAdminDashboard = () => apiRequest<AdminDashboard>("/admin/dashboard");
+export const getAdminDashboard = () =>
+  apiRequest<AdminDashboard>("/admin/dashboard");
 export const useGetAdminDashboard = () =>
-  useQuery<AdminDashboard, ApiError>({ queryKey: ["admin", "dashboard"], queryFn: getAdminDashboard });
+  useQuery<AdminDashboard, ApiError>({
+    queryKey: ["admin", "dashboard"],
+    queryFn: getAdminDashboard,
+  });
 
 // ── Users ─────────────────────────────────────────────────────────────────
 export interface AdminListUsersParams {
@@ -29,8 +33,14 @@ export interface AdminListUsersParams {
   page?: number;
 }
 export const adminListUsers = (params?: AdminListUsersParams) =>
-  apiRequest<AdminUsersResponse>("/admin/users", { params: params as Record<string, any> });
-export const getAdminListUsersQueryKey = (params?: AdminListUsersParams) => ["admin", "users", params ?? {}];
+  apiRequest<AdminUsersResponse>("/admin/users", {
+    params: params as Record<string, any>,
+  });
+export const getAdminListUsersQueryKey = (params?: AdminListUsersParams) => [
+  "admin",
+  "users",
+  params ?? {},
+];
 export const useAdminListUsers = (params?: AdminListUsersParams) =>
   useQuery<AdminUsersResponse, ApiError>({
     queryKey: getAdminListUsersQueryKey(params),
@@ -38,12 +48,20 @@ export const useAdminListUsers = (params?: AdminListUsersParams) =>
   });
 
 export const adminUpdateUserStatus = (id: string, status: UserStatus) =>
-  apiRequest<{ message: string }>(`/admin/users/${id}/status`, { method: "PATCH", data: { status } });
+  apiRequest<{ message: string }>(`/admin/users/${id}/status`, {
+    method: "PATCH",
+    data: { status },
+  });
 export const useAdminUpdateUserStatus = () => {
   const queryClient = useQueryClient();
-  return useMutation<{ message: string }, ApiError, { id: string; data: { status: UserStatus } }>({
+  return useMutation<
+    { message: string },
+    ApiError,
+    { id: string; data: { status: UserStatus } }
+  >({
     mutationFn: (vars) => adminUpdateUserStatus(vars.id, vars.data.status),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "users"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] }),
   });
 };
 
@@ -52,8 +70,12 @@ export interface AdminListSellersParams {
   status?: SellerStatus;
 }
 export const adminListSellers = (params?: AdminListSellersParams) =>
-  apiRequest<Seller[]>("/admin/sellers", { params: params as Record<string, any> });
-export const getAdminListSellersQueryKey = (params?: AdminListSellersParams) => ["admin", "sellers", params ?? {}];
+  apiRequest<Seller[]>("/admin/sellers", {
+    params: params as Record<string, any>,
+  });
+export const getAdminListSellersQueryKey = (
+  params?: AdminListSellersParams,
+) => ["admin", "sellers", params ?? {}];
 export const useAdminListSellers = (params?: AdminListSellersParams) =>
   useQuery<Seller[], ApiError>({
     queryKey: getAdminListSellersQueryKey(params),
@@ -61,12 +83,20 @@ export const useAdminListSellers = (params?: AdminListSellersParams) =>
   });
 
 export const adminUpdateSellerStatus = (id: string, status: SellerStatus) =>
-  apiRequest<{ message: string }>(`/admin/sellers/${id}/status`, { method: "PATCH", data: { status } });
+  apiRequest<{ message: string }>(`/admin/sellers/${id}/status`, {
+    method: "PATCH",
+    data: { status },
+  });
 export const useAdminUpdateSellerStatus = () => {
   const queryClient = useQueryClient();
-  return useMutation<{ message: string }, ApiError, { id: string; data: { status: SellerStatus } }>({
+  return useMutation<
+    { message: string },
+    ApiError,
+    { id: string; data: { status: SellerStatus } }
+  >({
     mutationFn: (vars) => adminUpdateSellerStatus(vars.id, vars.data.status),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "sellers"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin", "sellers"] }),
   });
 };
 
@@ -77,8 +107,12 @@ export interface AdminListProductsParams {
   page?: number;
 }
 export const adminListProducts = (params?: AdminListProductsParams) =>
-  apiRequest<ProductListResponse>("/admin/products", { params: params as Record<string, any> });
-export const getAdminListProductsQueryKey = (params?: AdminListProductsParams) => ["admin", "products", params ?? {}];
+  apiRequest<ProductListResponse>("/admin/products", {
+    params: params as Record<string, any>,
+  });
+export const getAdminListProductsQueryKey = (
+  params?: AdminListProductsParams,
+) => ["admin", "products", params ?? {}];
 export const useAdminListProducts = (params?: AdminListProductsParams) =>
   useQuery<ProductListResponse, ApiError>({
     queryKey: getAdminListProductsQueryKey(params),
@@ -86,12 +120,20 @@ export const useAdminListProducts = (params?: AdminListProductsParams) =>
   });
 
 export const adminUpdateProductStatus = (id: string, status: string) =>
-  apiRequest<{ message: string }>(`/admin/products/${id}/status`, { method: "PATCH", data: { status } });
+  apiRequest<{ message: string }>(`/admin/products/${id}/status`, {
+    method: "PATCH",
+    data: { status },
+  });
 export const useAdminUpdateProductStatus = () => {
   const queryClient = useQueryClient();
-  return useMutation<{ message: string }, ApiError, { id: string; data: { status: string } }>({
+  return useMutation<
+    { message: string },
+    ApiError,
+    { id: string; data: { status: string } }
+  >({
     mutationFn: (vars) => adminUpdateProductStatus(vars.id, vars.data.status),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "products"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] }),
   });
 };
 
@@ -100,8 +142,14 @@ export interface AdminListOrdersParams {
   status?: OrderStatus;
 }
 export const adminListOrders = (params?: AdminListOrdersParams) =>
-  apiRequest<Order[]>("/admin/orders", { params: params as Record<string, any> });
-export const getAdminListOrdersQueryKey = (params?: AdminListOrdersParams) => ["admin", "orders", params ?? {}];
+  apiRequest<Order[]>("/admin/orders", {
+    params: params as Record<string, any>,
+  });
+export const getAdminListOrdersQueryKey = (params?: AdminListOrdersParams) => [
+  "admin",
+  "orders",
+  params ?? {},
+];
 export const useAdminListOrders = (params?: AdminListOrdersParams) =>
   useQuery<Order[], ApiError>({
     queryKey: getAdminListOrdersQueryKey(params),
@@ -109,10 +157,14 @@ export const useAdminListOrders = (params?: AdminListOrdersParams) =>
   });
 
 // ── Categories ────────────────────────────────────────────────────────────
-export const adminListCategories = () => apiRequest<Category[]>("/admin/categories");
+export const adminListCategories = () =>
+  apiRequest<Category[]>("/admin/categories");
 export const getAdminListCategoriesQueryKey = () => ["admin", "categories"];
 export const useAdminListCategories = () =>
-  useQuery<Category[], ApiError>({ queryKey: getAdminListCategoriesQueryKey(), queryFn: adminListCategories });
+  useQuery<Category[], ApiError>({
+    queryKey: getAdminListCategoriesQueryKey(),
+    queryFn: adminListCategories,
+  });
 
 export interface CategoryInput {
   name: string;
@@ -127,7 +179,10 @@ export const useAdminCreateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation<Category, ApiError, { data: CategoryInput }>({
     mutationFn: (vars) => adminCreateCategory(vars.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: getAdminListCategoriesQueryKey() }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: getAdminListCategoriesQueryKey(),
+      }),
   });
 };
 
@@ -135,19 +190,31 @@ export const adminUpdateCategory = (id: string, data: Partial<CategoryInput>) =>
   apiRequest<Category>(`/admin/categories/${id}`, { method: "PATCH", data });
 export const useAdminUpdateCategory = () => {
   const queryClient = useQueryClient();
-  return useMutation<Category, ApiError, { id: string; data: Partial<CategoryInput> }>({
+  return useMutation<
+    Category,
+    ApiError,
+    { id: string; data: Partial<CategoryInput> }
+  >({
     mutationFn: (vars) => adminUpdateCategory(vars.id, vars.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: getAdminListCategoriesQueryKey() }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: getAdminListCategoriesQueryKey(),
+      }),
   });
 };
 
 export const adminDeleteCategory = (id: string) =>
-  apiRequest<{ message: string }>(`/admin/categories/${id}`, { method: "DELETE" });
+  apiRequest<{ message: string }>(`/admin/categories/${id}`, {
+    method: "DELETE",
+  });
 export const useAdminDeleteCategory = () => {
   const queryClient = useQueryClient();
   return useMutation<{ message: string }, ApiError, { id: string }>({
     mutationFn: (vars) => adminDeleteCategory(vars.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: getAdminListCategoriesQueryKey() }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: getAdminListCategoriesQueryKey(),
+      }),
   });
 };
 
@@ -157,12 +224,14 @@ export interface BrandInput {
   slug: string;
   logoUrl?: string;
 }
-export const adminCreateBrand = (data: BrandInput) => apiRequest<Brand>("/admin/brands", { method: "POST", data });
+export const adminCreateBrand = (data: BrandInput) =>
+  apiRequest<Brand>("/admin/brands", { method: "POST", data });
 export const useAdminCreateBrand = () => {
   const queryClient = useQueryClient();
   return useMutation<Brand, ApiError, { data: BrandInput }>({
     mutationFn: (vars) => adminCreateBrand(vars.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["brands", "list"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["brands", "list"] }),
   });
 };
 
@@ -170,7 +239,10 @@ export const useAdminCreateBrand = () => {
 export const adminListCoupons = () => apiRequest<Coupon[]>("/admin/coupons");
 export const getAdminListCouponsQueryKey = () => ["admin", "coupons"];
 export const useAdminListCoupons = () =>
-  useQuery<Coupon[], ApiError>({ queryKey: getAdminListCouponsQueryKey(), queryFn: adminListCoupons });
+  useQuery<Coupon[], ApiError>({
+    queryKey: getAdminListCouponsQueryKey(),
+    queryFn: adminListCoupons,
+  });
 
 export interface CouponInput {
   code: string;
@@ -180,16 +252,24 @@ export interface CouponInput {
   maxDiscount?: number;
   expiresAt?: string;
 }
-export const adminCreateCoupon = (data: CouponInput) => apiRequest<Coupon>("/admin/coupons", { method: "POST", data });
+export const adminCreateCoupon = (data: CouponInput) =>
+  apiRequest<Coupon>("/admin/coupons", { method: "POST", data });
 export const useAdminCreateCoupon = () => {
   const queryClient = useQueryClient();
   return useMutation<Coupon, ApiError, { data: CouponInput }>({
     mutationFn: (vars) => adminCreateCoupon(vars.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: getAdminListCouponsQueryKey() }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: getAdminListCouponsQueryKey(),
+      }),
   });
 };
 
 // ── Analytics ─────────────────────────────────────────────────────────────
-export const getRevenueAnalytics = () => apiRequest<RevenuePoint[]>("/admin/analytics/revenue");
+export const getRevenueAnalytics = () =>
+  apiRequest<RevenuePoint[]>("/admin/analytics/revenue");
 export const useGetRevenueAnalytics = () =>
-  useQuery<RevenuePoint[], ApiError>({ queryKey: ["admin", "analytics", "revenue"], queryFn: getRevenueAnalytics });
+  useQuery<RevenuePoint[], ApiError>({
+    queryKey: ["admin", "analytics", "revenue"],
+    queryFn: getRevenueAnalytics,
+  });

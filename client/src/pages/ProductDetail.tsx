@@ -32,12 +32,35 @@ export default function ProductDetail() {
       toast.error("Please log in to add items to cart");
       return;
     }
+    if (product?.stock === 0) {
+      toast.error("Product is out of stock");
+      return;
+    }
     addToCart.mutate({ data: { productId: id!, quantity } }, {
       onSuccess: () => {
         toast.success(`Added ${quantity} item(s) to cart`);
         queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
       },
       onError: () => toast.error("Failed to add to cart")
+    });
+  };
+
+  const handleBuyNow = () => {
+    if (!user) {
+      toast.error("Please log in to buy items");
+      return;
+    }
+    if (product?.stock === 0) {
+      toast.error("Product is out of stock");
+      return;
+    }
+    addToCart.mutate({ data: { productId: id!, quantity } }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
+        // Redirect to checkout path (or cart if there's no direct checkout path in standard setup, but usually it's /checkout)
+        window.location.href = "/checkout";
+      },
+      onError: () => toast.error("Failed to process buy now")
     });
   };
 
@@ -154,10 +177,21 @@ export default function ProductDetail() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="flex-1 h-14 text-lg rounded-full" onClick={handleAddToCart}>
+                <Button 
+                  size="lg" 
+                  className="flex-1 h-14 text-lg rounded-full" 
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0}
+                >
                   <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
                 </Button>
-                <Button size="lg" variant="secondary" className="flex-1 h-14 text-lg rounded-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+                <Button 
+                  size="lg" 
+                  variant="secondary" 
+                  className="flex-1 h-14 text-lg rounded-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                  onClick={handleBuyNow}
+                  disabled={product.stock === 0}
+                >
                   Buy Now
                 </Button>
               </div>
