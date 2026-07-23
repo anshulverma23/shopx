@@ -11,10 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function AdminProducts() {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   
   const { data, isLoading } = useAdminListProducts({
-    q: search || undefined, status: (statusFilter || undefined) as any
+    q: search || undefined, status: (statusFilter === "all" ? undefined : statusFilter) as any
   });
   
   const updateStatus = useAdminUpdateProductStatus();
@@ -53,7 +53,7 @@ export default function AdminProducts() {
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="pending">Pending Review</SelectItem>
               <SelectItem value="approved">Approved</SelectItem>
               <SelectItem value="rejected">Rejected</SelectItem>

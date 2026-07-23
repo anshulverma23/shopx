@@ -8,9 +8,9 @@ import { useState } from "react";
 import { Link } from "wouter";
 
 export default function AdminOrders() {
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const { data, isLoading } = useAdminListOrders({
-    status: (statusFilter || undefined) as any
+    status: (statusFilter === "all" ? undefined : statusFilter) as any
   });
 
   return (
@@ -26,7 +26,7 @@ export default function AdminOrders() {
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="confirmed">Confirmed</SelectItem>
               <SelectItem value="shipped">Shipped</SelectItem>

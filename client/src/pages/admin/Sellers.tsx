@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 
 export default function AdminSellers() {
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const { data, isLoading } = useAdminListSellers({
-    status: (statusFilter || undefined) as any
+    status: (statusFilter === "all" ? undefined : statusFilter) as any
   });
   
   const updateStatus = useAdminUpdateSellerStatus();
@@ -40,7 +40,7 @@ export default function AdminSellers() {
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="approved">Approved</SelectItem>
               <SelectItem value="suspended">Suspended</SelectItem>

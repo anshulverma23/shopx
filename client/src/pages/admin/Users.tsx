@@ -11,10 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function AdminUsers() {
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   
   const { data, isLoading } = useAdminListUsers({
-    q: search || undefined, role: (roleFilter || undefined) as any
+    q: search || undefined, role: (roleFilter === "all" ? undefined : roleFilter) as any
   });
   
   const updateStatus = useAdminUpdateUserStatus();
@@ -56,7 +56,7 @@ export default function AdminUsers() {
               <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Roles</SelectItem>
+              <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="buyer">Buyers</SelectItem>
               <SelectItem value="seller">Sellers</SelectItem>
               <SelectItem value="admin">Admins</SelectItem>
