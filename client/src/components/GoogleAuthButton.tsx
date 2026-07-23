@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   GoogleLogin,
   CredentialResponse,
@@ -19,8 +18,6 @@ export function GoogleAuthButton({
   onSuccess,
   role,
 }: GoogleAuthButtonProps) {
-  const googleRef = useRef<HTMLDivElement>(null);
-
   const { login } = useAuth();
   const { toast } = useToast();
   const googleAuthMutation = useGoogleAuth();
@@ -68,22 +65,26 @@ export function GoogleAuthButton({
     );
   };
 
-  const handleCustomClick = () => {
-    const button =
-      googleRef.current?.querySelector(
-        'div[role="button"]'
-      ) as HTMLElement | null;
-
-    button?.click();
-  };
-
   return (
-    <>
-      {/* Hidden Google Button */}
+    // Wrapper defines the visual size/shape of the button. The real
+    // Google button is stacked on top with opacity 0 but pointer-events
+    // left ON, so the user's actual click lands on Google's iframe
+    // (a trusted click) instead of a JS-triggered .click() on a hidden
+    // button, which browsers/FedCM intermittently block.
+    <div className="relative w-full max-w-md h-12">
+      {/* Custom look — purely decorative, sits underneath */}
       <div
-        ref={googleRef}
-        className="absolute opacity-0 pointer-events-none"
+        aria-hidden="true"
+        className="absolute inset-0 rounded-full border border-gray-300 bg-white flex items-center justify-center gap-3 shadow-sm pointer-events-none"
       >
+        <FcGoogle className="text-2xl" />
+        <span className="text-[16px] font-medium text-gray-700">
+          Continue with Google
+        </span>
+      </div>
+
+      {/* Real Google button — invisible but receives the actual click */}
+      <div className="absolute inset-0 opacity-0 overflow-hidden [&>div]:!w-full [&>div]:!h-full [&_iframe]:!w-full [&_iframe]:!h-full">
         <GoogleLogin
           onSuccess={handleCredential}
           onError={() =>
@@ -93,21 +94,10 @@ export function GoogleAuthButton({
             })
           }
           useOneTap={false}
+          size="large"
+          width="400"
         />
       </div>
-
-      {/* Custom Button */}
-      <button
-        type="button"
-        onClick={handleCustomClick}
-        className="w-full max-w-md h-12 rounded-full border border-gray-300 bg-white hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-3 shadow-sm hover:shadow-md"
-      >
-        <FcGoogle className="text-2xl" />
-
-        <span className="text-[16px] font-medium text-gray-700">
-          Continue with Google
-        </span>
-      </button>
-    </>
+    </div>
   );
 }
