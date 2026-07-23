@@ -5,7 +5,7 @@ import { logger } from "../utils/logger";
 mongoose.set("strictQuery", true);
 
 export async function connectDB(): Promise<void> {
-  mongoose.connection.on("connected", () => {
+  mongoose.connection.on("connected", () => { 
     logger.info("MongoDB connected");
   });
 
