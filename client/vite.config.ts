@@ -1,37 +1,24 @@
-import path from 'path';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import axios from "axios";
 
-// Backend URL used by the dev-server proxy, so the client can call relative
-// paths like `/api/products` in development without hitting CORS. Point
-// this at wherever `npm run dev` in /server is listening.
-const API_PROXY_TARGET = process.env.VITE_API_PROXY_TARGET || 'https://shopx-1-ejti.onrender.com';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      '@': path.resolve(import.meta.dirname, 'src'),
-    },
-    dedupe: ['react', 'react-dom'],
-  },
-  server: {
-    port: 5173,
-    host: true,
-    proxy: {
-      '/api': {
-        target: API_PROXY_TARGET,
-        changeOrigin: true,
-      },
-    },
-  },
-  preview: {
-    port: 5173,
-    host: true,
-  },
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true,
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
   },
 });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export default api;
