@@ -21,9 +21,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedUser = localStorage.getItem("shopx_user");
       const storedToken = localStorage.getItem("shopx_access_token");
 
-      if (storedUser && storedToken) {
+      if (storedUser && storedUser !== "undefined" && storedToken) {
         setUser(JSON.parse(storedUser));
         setAccessToken(storedToken);
+      } else if (storedUser === "undefined") {
+        localStorage.removeItem("shopx_user");
+        localStorage.removeItem("shopx_access_token");
+        localStorage.removeItem("shopx_refresh_token");
       }
     } catch (error) {
       console.error("Failed to restore auth session:", error);
