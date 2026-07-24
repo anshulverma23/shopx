@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 // Backend URL used by the dev-server proxy, so the client can call relative
 // paths like `/api/products` in development without hitting CORS. Point
 // this at wherever `npm run dev` in /server is listening.
-const API_PROXY_TARGET = process.env.VITE_API_PROXY_TARGET || 'https://shopx-ynh5.onrender.com/';
+const API_PROXY_TARGET = process.env.VITE_API_PROXY_TARGET || 'https://shopx-1-ejti.onrender.com';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
