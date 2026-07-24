@@ -13,7 +13,7 @@ function required(name: string, fallback?: string): string {
 export const env = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: Number(process.env.PORT) || 3000,
-  clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
+  clientUrl: process.env.CLIENT_URL || "https://shopx-2-znk3.onrender.com",
 
   mongodbUri: required("MONGODB_URI", "mongodb://127.0.0.1:27017/shopx"),
 
