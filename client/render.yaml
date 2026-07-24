@@ -4,6 +4,15 @@ services:
     env: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://shopx-1-ejti.onrender.com/api
+      - key: VITE_GOOGLE_CLIENT_ID
+        value: 1078063414839-vg74bd9b38lfreuu1pui22s82qvm32jm.apps.googleusercontent.com
+      - key: VITE_IMAGEKIT_PUBLIC_KEY
+        value: public_FbG6o9/Gza1lJF3F1oGgSggg+W0=
+      - key: VITE_IMAGEKIT_URL_ENDPOINT
+        value: https://ik.imagekit.io/iffvyadre
     routes:
       - type: rewrite
         source: /*
